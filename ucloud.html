@@ -1,289 +1,496 @@
-# 1. Create a simple HTML file
-cat > ucloud-demo.html << 'EOL'
+# Create the main HTML file
+cat > ~/Desktop/qwen-ucloud-main/index.html << 'EOL'
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ucloud MVP Demo</title>
+    <title>Ucloud - Private Cloud Storage</title>
     <style>
+        :root {
+            --primary-blue: #3b82f6;
+            --primary-blue-dark: #2563eb;
+            --secondary-blue: #60a5fa;
+            --accent-blue: #93c5fd;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-text-secondary: #94a3b8;
+            --success-green: #10b981;
+            --warning-yellow: #f59e0b;
+            --danger-red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
+            color: var(--dark-text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(30, 41, 59, 0.8) 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--dark-text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(59, 130, 246, 0.35);
+        }
+
+        .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f7fa;
+            padding: 2rem;
         }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
+
         .tab {
-            padding: 12px 20px;
-            background: white;
-            border: none;
-            border-radius: 8px;
+            background: var(--dark-card);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            color: var(--dark-text-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 500;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: 500;
         }
+
+        .tab:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-blue);
+        }
+
         .tab.active {
-            background: #667eea;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
             color: white;
+            border-color: var(--primary-blue);
         }
+
         .panel {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             display: none;
         }
+
         .panel.active {
             display: block;
+            animation: fadeIn 0.5s ease;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-blue-dark), #1d4ed8);
+        }
+
+        .btn-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
         .file-list {
             display: grid;
-            gap: 15px;
+            gap: 1rem;
         }
+
         .file-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
+
         .file-item:hover {
+            background: rgba(59, 130, 246, 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: rgba(59, 130, 246, 0.3);
         }
+
         .file-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 1rem;
         }
+
         .file-icon {
-            width: 40px;
-            height: 40px;
-            background: #667eea;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .file-details h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+        }
+
+        .file-meta {
+            font-size: 0.85rem;
+            color: var(--dark-text-secondary);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-synced {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-green);
+        }
+
+        .status-encrypted {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: var(--dark-text-secondary);
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-        .file-details h3 {
-            margin: 0 0 5px 0;
-            color: #333;
-        }
-        .file-meta {
-            font-size: 12px;
-            color: #666;
-        }
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .status-synced { background: #d4edda; color: #155724; }
-        .status-syncing { background: #d1ecf1; color: #0c5460; }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
             cursor: pointer;
-            font-weight: 500;
             transition: all 0.2s ease;
         }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-success { background: #28a745; color: white; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        .sync-log {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .log-entry {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-        .log-info { color: #17a2b8; }
-        .log-success { color: #28a745; }
-        .log-warning { color: #ffc107; }
-        .log-error { color: #dc3545; }
-        .settings-grid {
-            display: grid;
-            gap: 20px;
-        }
-        .setting-item {
-            padding: 20px;
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-        }
-        .setting-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-        .setting-icon {
-            width: 32px;
-            height: 32px;
-            background: #667eea;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .action-btn:hover {
+            background: var(--primary-blue);
             color: white;
+            border-color: var(--primary-blue);
         }
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
+
+        .form-group {
+            margin-bottom: 1.5rem;
         }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
         }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 10px;
+            color: var(--dark-text);
+            font-size: 1rem;
         }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
-        input:checked + .slider {
-            background-color: #28a745;
+
+        .status-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
-        input:checked + .slider:before {
-            transform: translateX(26px);
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            color: var(--dark-text-secondary);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: var(--dark-card);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success-green);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--danger-red);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .panel {
+                padding: 1.5rem;
+            }
+            
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .file-actions {
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>☁️ Ucloud MVP</h1>
-        <p>Self-hosted private cloud solution</p>
-    </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>☁️ Ucloud</h1>
+        <p>Self-hosted private cloud storage. Your files, your control, your security.</p>
+        <button class="cta-button" onclick="switchTab('files')">Get Started</button>
+    </section>
 
-    <div class="tabs">
-        <button class="tab active" onclick="switchTab('files')">📁 Files</button>
-        <button class="tab" onclick="switchTab('sync')">🔄 Sync</button>
-        <button class="tab" onclick="switchTab('settings')">⚙️ Settings</button>
-    </div>
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('files')">📁 Files</button>
+            <button class="tab" onclick="switchTab('upload')">📤 Upload</button>
+            <button class="tab" onclick="switchTab('security')">🔒 Security</button>
+            <button class="tab" onclick="switchTab('status')">📊 Status</button>
+        </div>
 
-    <div id="files" class="panel active">
-        <div class="controls">
-            <button class="btn btn-primary" onclick="syncFiles()">🔄 Sync Now</button>
-            <button class="btn btn-success" onclick="uploadFile()">📤 Upload File</button>
+        <!-- Files Panel -->
+        <div id="files" class="panel active">
+            <div class="controls">
+                <button class="btn btn-primary" onclick="loadFiles()">🔄 Refresh</button>
+                <button class="btn" onclick="syncFiles()">⚡ Sync Now</button>
+            </div>
+            <div class="file-list" id="fileList">
+                <!-- Files will be loaded here -->
+                <div style="text-align: center; padding: 3rem; color: var(--dark-text-secondary);">
+                    <p>Loading files...</p>
+                </div>
+            </div>
         </div>
-        
-        <div class="file-list" id="fileList">
-            <!-- Files will be populated here -->
-        </div>
-    </div>
 
-    <div id="sync" class="panel">
-        <div class="controls">
-            <button class="btn btn-primary" onclick="startSync()">▶️ Start Sync</button>
-            <button class="btn btn-danger" onclick="stopSync()">⏹️ Stop Sync</button>
+        <!-- Upload Panel -->
+        <div id="upload" class="panel">
+            <h2 style="margin-bottom: 1.5rem;">📤 Upload New File</h2>
+            <div class="form-group">
+                <label for="filename">File Name</label>
+                <input type="text" id="filename" class="form-control" placeholder="Enter file name">
+            </div>
+            <div class="form-group">
+                <label for="fileContent">File Content</label>
+                <textarea id="fileContent" class="form-control" rows="6" placeholder="Enter file content"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="uploadFile()">📤 Upload File</button>
         </div>
-        
-        <div class="sync-log" id="syncLog">
-            <!-- Sync events will appear here -->
-        </div>
-    </div>
 
-    <div id="settings" class="panel">
-        <div class="settings-grid">
-            <div class="setting-item">
-                <div class="setting-header">
-                    <div class="setting-icon">🔒</div>
-                    <div>
-                        <h3>File Encryption</h3>
-                        <p>Encrypt files before storage</p>
+        <!-- Security Panel -->
+        <div id="security" class="panel">
+            <h2 style="margin-bottom: 1.5rem;">🔒 Encryption Settings</h2>
+            <div class="status-card">
+                <h3>Current Status</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-value" id="encryptStatus">Disabled</div>
+                        <div class="status-label">Encryption</div>
                     </div>
                 </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="encryptionToggle">
-                    <span class="slider"></span>
-                </label>
             </div>
             
-            <div class="setting-item">
-                <div class="setting-header">
-                    <div class="setting-icon">🌐</div>
-                    <div>
-                        <h3>Cloudflare Tunnel</h3>
-                        <p>Access your cloud from anywhere</p>
+            <div class="form-group">
+                <label for="encryptionPassword">Encryption Password</label>
+                <input type="password" id="encryptionPassword" class="form-control" placeholder="Enter password for encryption">
+            </div>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-success" onclick="enableEncryption()">🔐 Enable Encryption</button>
+                <button class="btn" onclick="disableEncryption()">🔓 Disable Encryption</button>
+            </div>
+        </div>
+
+        <!-- Status Panel -->
+        <div id="status" class="panel">
+            <h2 style="margin-bottom: 1.5rem;">📊 System Status</h2>
+            <div class="status-card">
+                <h3>Storage Information</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-value" id="driveStatus">✓</div>
+                        <div class="status-label">Drive Connected</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="syncPercent">0%</div>
+                        <div class="status-label">Sync Progress</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="encryptEnabled">✗</div>
+                        <div class="status-label">Encryption</div>
                     </div>
                 </div>
-                <input type="text" placeholder="yourname.u.cloud" style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 4px;">
-                <button class="btn btn-primary" style="margin-left: 10px;">Create Tunnel</button>
+            </div>
+            
+            <div class="status-card">
+                <h3>System Information</h3>
+                <p style="margin-top: 1rem; color: var(--dark-text-secondary);">
+                    Ucloud Private Cloud Storage<br>
+                    Local API: http://localhost:8000<br>
+                    Files stored locally on your device
+                </p>
             </div>
         </div>
     </div>
 
-    <script>
-        // Mock data
-        let files = [
-            { id: '1', name: 'Project_Doc.pdf', size: 245678, modifiedISO: '2023-08-15T14:30:00Z', sha256: 'a1b2c3d4', encrypted: false, status: 'synced' },
-            { id: '2', name: 'Vacation_Photos.zip', size: 4589231, modifiedISO: '2023-08-10T09:15:00Z', sha256: 'e5f6g7h8', encrypted: true, status: 'syncing' },
-            { id: '3', name: 'Budget_Q3.xlsx', size: 189234, modifiedISO: '2023-08-20T11:45:00Z', sha256: 'i9j0k1l2', encrypted: false, status: 'pending' },
-            { id: '4', name: 'Meeting_Notes.docx', size: 87654, modifiedISO: '2023-08-18T16:20:00Z', sha256: 'm3n4o5p6', encrypted: false, status: 'synced' },
-            { id: '5', name: 'Secure_Data.enc', size: 321098, modifiedISO: '2023-08-22T08:05:00Z', sha256: 'q7r8s9t0', encrypted: true, status: 'synced' }
-        ];
+    <!-- Notification System -->
+    <div id="notification" class="notification"></div>
 
-        let syncEvents = [
-            { type: 'info', message: 'Sync started', timestamp: new Date().toLocaleTimeString() },
-            { type: 'success', message: 'File Project_Doc.pdf synced successfully', timestamp: new Date().toLocaleTimeString() },
-            { type: 'warning', message: 'Large file detected: Vacation_Photos.zip', timestamp: new Date().toLocaleTimeString() }
-        ];
+    <script>
+        // API Base URL
+        const API_BASE = 'http://localhost:8000';
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            renderFiles();
-            renderSyncLog();
+            loadFiles();
+            loadStatus();
+            loadEncryptionStatus();
         });
 
         // Tab switching
@@ -301,111 +508,243 @@ cat > ucloud-demo.html << 'EOL'
             // Show selected panel and activate tab
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
+            
+            // Load data for active tab
+            if (tabName === 'files') {
+                loadFiles();
+            } else if (tabName === 'status') {
+                loadStatus();
+            } else if (tabName === 'security') {
+                loadEncryptionStatus();
+            }
         }
 
-        // File operations
-        function renderFiles() {
-            const fileList = document.getElementById('fileList');
-            fileList.innerHTML = files.map(file => `
-                <div class="file-item">
-                    <div class="file-info">
-                        <div class="file-icon">📄</div>
-                        <div class="file-details">
-                            <h3>${file.name}</h3>
-                            <div class="file-meta">
-                                ${formatFileSize(file.size)} • ${formatDate(file.modifiedISO)}
-                                ${file.encrypted ? ' • 🔒 Encrypted' : ''}
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load files
+        async function loadFiles() {
+            try {
+                const response = await fetch(`${API_BASE}/files`);
+                const files = await response.json();
+                
+                const fileList = document.getElementById('fileList');
+                
+                if (files.length === 0) {
+                    fileList.innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: var(--dark-text-secondary);">
+                            <h3>📁 No files found</h3>
+                            <p style="margin-top: 0.5rem;">Upload your first file to get started!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                fileList.innerHTML = files.map(file => `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-icon">📄</div>
+                            <div class="file-details">
+                                <h3>${file.name}</h3>
+                                <div class="file-meta">
+                                    ${formatFileSize(file.size)} • ${formatDate(file.modifiedISO)}
+                                    ${file.encrypted ? ' • 🔒 Encrypted' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span class="status-badge ${file.encrypted ? 'status-encrypted' : 'status-synced'}">
+                                ${file.encrypted ? 'encrypted' : 'synced'}
+                            </span>
+                            <div class="file-actions">
+                                <button class="action-btn" onclick="renameFile('${file.id}')" title="Rename">✏️</button>
+                                <button class="action-btn" onclick="deleteFile('${file.id}')" title="Delete">🗑️</button>
                             </div>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span class="status-badge status-${file.status}">${file.status}</span>
-                        <button class="btn" onclick="renameFile('${file.id}')" style="padding: 5px 10px;">✏️</button>
-                        <button class="btn btn-danger" onclick="deleteFile('${file.id}')" style="padding: 5px 10px;">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function syncFiles() {
-            alert('Sync started! In a real implementation, this would sync your files.');
-            // Add a sync event
-            syncEvents.push({
-                type: 'info',
-                message: 'Manual sync initiated',
-                timestamp: new Date().toLocaleTimeString()
-            });
-            if (document.getElementById('sync').classList.contains('active')) {
-                renderSyncLog();
+                `).join('');
+            } catch (error) {
+                showNotification('Failed to load files: ' + error.message, 'error');
             }
         }
 
-        function uploadFile() {
-            const fileName = prompt('Enter file name:');
-            if (fileName) {
-                files.unshift({
-                    id: Date.now().toString(),
-                    name: fileName,
-                    size: Math.floor(Math.random() * 1000000),
-                    modifiedISO: new Date().toISOString(),
-                    sha256: Math.random().toString(36).substring(2, 15),
-                    encrypted: document.getElementById('encryptionToggle').checked,
-                    status: 'pending'
-                });
-                renderFiles();
-                alert(`File "${fileName}" uploaded successfully!`);
-            }
-        }
-
-        function deleteFile(id) {
-            if (confirm('Are you sure you want to delete this file?')) {
-                files = files.filter(file => file.id !== id);
-                renderFiles();
-                alert('File deleted successfully!');
-            }
-        }
-
-        function renameFile(id) {
-            const file = files.find(f => f.id === id);
-            const newName = prompt('Enter new name:', file.name);
-            if (newName && newName !== file.name) {
-                file.name = newName;
-                renderFiles();
-                alert('File renamed successfully!');
-            }
-        }
-
-        // Sync operations
-        function startSync() {
-            syncEvents.push({
-                type: 'success',
-                message: 'Sync process started',
-                timestamp: new Date().toLocaleTimeString()
-            });
-            renderSyncLog();
-            alert('Sync started! In a real implementation, this would watch your files for changes.');
-        }
-
-        function stopSync() {
-            syncEvents.push({
-                type: 'info',
-                message: 'Sync process stopped',
-                timestamp: new Date().toLocaleTimeString()
-            });
-            renderSyncLog();
-            alert('Sync stopped.');
-        }
-
-        function renderSyncLog() {
-            const syncLog = document.getElementById('syncLog');
-            syncLog.innerHTML = syncEvents.map(event => `
-                <div class="log-entry log-${event.type}">
-                    <strong>[${event.timestamp}]</strong> ${event.message}
-                </div>
-            `).join('');
+        // Upload file
+        async function uploadFile() {
+            const filename = document.getElementById('filename').value;
+            const content = document.getElementById('fileContent').value;
             
-            // Auto-scroll to bottom
-            syncLog.scrollTop = syncLog.scrollHeight;
+            if (!filename) {
+                showNotification('Please enter a file name', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ filename, content })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('File uploaded successfully!');
+                    document.getElementById('filename').value = '';
+                    document.getElementById('fileContent').value = '';
+                    loadFiles();
+                    switchTab('files');
+                } else {
+                    showNotification('Upload failed: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Upload failed: ' + error.message, 'error');
+            }
+        }
+
+        // Delete file
+        async function deleteFile(id) {
+            if (!confirm('Are you sure you want to delete this file?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/files/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('File deleted successfully!');
+                    loadFiles();
+                } else {
+                    showNotification('Delete failed: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Delete failed: ' + error.message, 'error');
+            }
+        }
+
+        // Rename file
+        async function renameFile(id) {
+            const newName = prompt('Enter new file name:');
+            if (!newName || newName === id) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/files/${id}/rename`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newName })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('File renamed successfully!');
+                    loadFiles();
+                } else {
+                    showNotification('Rename failed: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Rename failed: ' + error.message, 'error');
+            }
+        }
+
+        // Enable encryption
+        async function enableEncryption() {
+            const password = document.getElementById('encryptionPassword').value;
+            if (!password) {
+                showNotification('Please enter a password', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/encrypt/enable`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Encryption enabled successfully!');
+                    document.getElementById('encryptionPassword').value = '';
+                    loadEncryptionStatus();
+                    loadStatus();
+                } else {
+                    showNotification('Failed to enable encryption: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to enable encryption: ' + error.message, 'error');
+            }
+        }
+
+        // Disable encryption
+        async function disableEncryption() {
+            try {
+                const response = await fetch(`${API_BASE}/encrypt/disable`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Encryption disabled successfully!');
+                    loadEncryptionStatus();
+                    loadStatus();
+                } else {
+                    showNotification('Failed to disable encryption: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to disable encryption: ' + error.message, 'error');
+            }
+        }
+
+        // Load encryption status
+        async function loadEncryptionStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                const status = await response.json();
+                
+                document.getElementById('encryptStatus').textContent = status.encryptEnabled ? 'Enabled' : 'Disabled';
+            } catch (error) {
+                console.error('Failed to load encryption status:', error);
+            }
+        }
+
+        // Load system status
+        async function loadStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                const status = await response.json();
+                
+                document.getElementById('driveStatus').textContent = status.driveConnected ? '✓' : '✗';
+                document.getElementById('syncPercent').textContent = status.syncPercent + '%';
+                document.getElementById('encryptEnabled').textContent = status.encryptEnabled ? '✓' : '✗';
+            } catch (error) {
+                showNotification('Failed to load status: ' + error.message, 'error');
+            }
+        }
+
+        // Sync files
+        function syncFiles() {
+            showNotification('Sync started! This is a demo feature.');
+            setTimeout(() => {
+                loadFiles();
+            }, 1000);
         }
 
         // Utility functions
@@ -426,15 +765,6 @@ cat > ucloud-demo.html << 'EOL'
                 minute: '2-digit'
             });
         }
-
-        // Encryption toggle
-        document.getElementById('encryptionToggle').addEventListener('change', function() {
-            if (this.checked) {
-                alert('Encryption enabled! All new files will be encrypted.');
-            } else {
-                alert('Encryption disabled.');
-            }
-        });
     </script>
 </body>
 </html>
